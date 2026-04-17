@@ -1,0 +1,138 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+    output = "/home/ubuntu/claude_code_dashboard/nextjs_space/node_modules/.prisma/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum ContentBlockType {
+  TEXT
+  CODE
+  TABLE
+  HEADING
+}
+
+enum UploadStatus {
+  PENDING
+  PROCESSING
+  REVIEWED
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id            String     @id @default(cuid())
+  name          String?
+  email         String     @unique
+  password      String
+  role          Role       @default(USER)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  bookmarks     Bookmark[]
+  uploads       Upload[]
+}
+
+model Guide {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  version     String    @default("1.0")
+  isMain      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  chapters    Chapter[]
+}
+
+model Chapter {
+  id          String    @id @default(cuid())
+  title       String
+  number      Int
+  description String?
+  guideId     String
+  guide       Guide     @relation(fields: [guideId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  sections    Section[]
+
+  @@index([guideId])
+}
+
+model Section {
+  id          String         @id @default(cuid())
+  title       String
+  orderIndex  Int            @default(0)
+  chapterId   String
+  chapter     Chapter        @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  tags        String[]       @default([])
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  blocks      ContentBlock[]
+  bookmarks   Bookmark[]
+
+  @@index([chapterId])
+}
+
+model ContentBlock {
+  id          String           @id @default(cuid())
+  type        ContentBlockType
+  content     String
+  language    String?          
+  orderIndex  Int              @default(0)
+  sectionId   String
+  section     Section          @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  createdAt   DateTime         @default(now())
+
+  @@index([sectionId])
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  category    String
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  sectionId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, sectionId])
+  @@index([userId])
+}
+
+model Upload {
+  id                String       @id @default(cuid())
+  fileName          String
+  fileType          String
+  cloudStoragePath  String?
+  isPublic          Boolean      @default(false)
+  status            UploadStatus @default(PENDING)
+  aiSuggestion      String?
+  suggestedChapter  String?
+  suggestedSection  String?
+  suggestedTags     String[]     @default([])
+  extractedContent  String?
+  userId            String
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
