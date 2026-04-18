@@ -6,8 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Terminal, Mail, Lock, Loader2, UserPlus } from 'lucide-react';
-import Link from 'next/link';
+import { Terminal, Mail, Lock, Loader2 } from 'lucide-react';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -86,12 +85,9 @@ export default function LoginForm() {
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
             Inloggen
           </Button>
-          <div className="text-center text-sm text-muted-foreground">
-            Nog geen account?{' '}
-            <Link href="/signup" className="text-primary hover:underline inline-flex items-center gap-1">
-              <UserPlus className="w-3 h-3" /> Registreren
-            </Link>
-          </div>
+          <p className="text-center text-xs text-muted-foreground">
+            Accounts worden aangemaakt door de beheerder.
+          </p>
         </form>
       </CardContent>
     </Card>

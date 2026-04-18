@@ -1,9 +1,6 @@
-import SignupForm from './_components/signup-form';
+import { redirect } from 'next/navigation';
 
 export default function SignupPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
-      <SignupForm />
-    </div>
-  );
+  // Publieke registratie is uitgeschakeld. Alleen beheerders kunnen gebruikers aanmaken.
+  redirect('/login');
 }
