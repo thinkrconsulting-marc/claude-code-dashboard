@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
-import { Bookmark, BookmarkCheck, Copy, Check, ChevronRight, BookOpen, Code, Table2, Hash, History, X } from 'lucide-react';
+import { Bookmark, BookmarkCheck, Copy, Check, ChevronRight, BookOpen, Code, Table2, Hash, History, X, Play, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -113,6 +113,7 @@ export default function ChapterView({ chapterId }: { chapterId: string }) {
   const [versionPanel, setVersionPanel] = useState<string | null>(null);
   const [versions, setVersions] = useState<SectionVersionData[]>([]);
   const [loadingVersions, setLoadingVersions] = useState(false);
+  const [relatedVideos, setRelatedVideos] = useState<any[]>([]);
 
   const showVersions = async (sectionId: string) => {
     if (versionPanel === sectionId) { setVersionPanel(null); return; }
@@ -146,6 +147,14 @@ export default function ChapterView({ chapterId }: { chapterId: string }) {
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (!chapterId) return;
+    fetch(`/api/videos?chapterId=${chapterId}&limit=6`)
+      .then((r) => r?.json?.())
+      .then((d) => setRelatedVideos(d?.videos ?? []))
+      .catch(() => {});
+  }, [chapterId]);
 
   const toggleBookmark = useCallback(async (sectionId: string) => {
     try {
@@ -316,6 +325,39 @@ export default function ChapterView({ chapterId }: { chapterId: string }) {
             </motion.div>
           )) ?? []}
         </div>
+
+        {/* Related Videos */}
+        {relatedVideos.length > 0 && (
+          <div className="mt-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Play className="w-5 h-5 text-primary" />
+              <h2 className="text-lg font-semibold text-zinc-100">Gerelateerde Video&apos;s</h2>
+              <Badge variant="outline" className="text-xs">{relatedVideos.length}</Badge>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {relatedVideos.map((v: any) => (
+                <a key={v.id} href={v.url} target="_blank" rel="noopener noreferrer" className="block">
+                  <Card className="overflow-hidden hover:ring-1 hover:ring-primary/30 transition-all group" style={{ boxShadow: 'var(--shadow-sm)' }}>
+                    <div className="relative aspect-video bg-zinc-800">
+                      {v.thumbnailUrl ? (
+                        <img src={v.thumbnailUrl} alt={v.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center"><Play className="w-6 h-6 text-zinc-600" /></div>
+                      )}
+                      <span className={`absolute top-1.5 left-1.5 text-[9px] px-1 py-0.5 rounded font-bold ${v.language === 'NL' ? 'bg-orange-500/80 text-white' : 'bg-blue-500/80 text-white'}`}>
+                        {v.language === 'NL' ? '🇳🇱' : '🇬🇧'}
+                      </span>
+                    </div>
+                    <CardContent className="p-2.5">
+                      <h3 className="font-medium text-xs text-zinc-200 line-clamp-2 leading-snug">{v.title}</h3>
+                      <p className="text-[10px] text-zinc-500 mt-1">{v.channelName}</p>
+                    </CardContent>
+                  </Card>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

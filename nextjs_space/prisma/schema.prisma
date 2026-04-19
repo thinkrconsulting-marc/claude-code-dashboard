@@ -57,6 +57,7 @@ model User {
   uploads       Upload[]
   repos         GitHubRepo[]
   processingLogs ProcessingLog[]
+  videos        YouTubeVideo[]
 }
 
 model Guide {
@@ -80,6 +81,7 @@ model Chapter {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   sections    Section[]
+  videos      YouTubeVideo[]
 
   @@index([guideId])
 }
@@ -221,4 +223,75 @@ model GitHubRepo {
   @@index([category])
   @@index([securityStatus])
   @@index([addedById])
+}
+
+enum VideoCategory {
+  INSTALLATIE
+  SKILLS
+  MCP
+  WORKFLOWS
+  TIPS
+  FINANCE
+  PROMPTING
+  PROJECTEN
+  BEGINNERS
+  GEAVANCEERD
+  NIEUWS
+  OVERIG
+}
+
+enum VideoLanguage {
+  NL
+  EN
+}
+
+model YouTubeVideo {
+  id            String         @id @default(cuid())
+  videoId       String         @unique
+  title         String
+  url           String
+  channelName   String
+  channelHandle String?
+  description   String?        @db.Text
+  summary       String?        @db.Text
+  thumbnailUrl  String?
+  publishedAt   DateTime?
+  duration      String?
+  viewCount     Int?
+  language      VideoLanguage  @default(EN)
+  category      VideoCategory  @default(OVERIG)
+  tags          String[]
+  watched       Boolean        @default(false)
+  rating        Int?
+  notes         String?        @db.Text
+  chapterId     String?
+  chapter       Chapter?       @relation(fields: [chapterId], references: [id], onDelete: SetNull)
+  addedById     String?
+  addedBy       User?          @relation(fields: [addedById], references: [id], onDelete: SetNull)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([category])
+  @@index([language])
+  @@index([channelHandle])
+  @@index([watched])
+  @@index([chapterId])
+  @@index([addedById])
+}
+
+model YouTubeChannel {
+  id            String   @id @default(cuid())
+  handle        String   @unique
+  name          String
+  channelId     String?  @unique
+  description   String?  @db.Text
+  subscriberCount Int?
+  videoCount    Int?
+  thumbnailUrl  String?
+  isActive      Boolean  @default(true)
+  lastChecked   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([isActive])
 }

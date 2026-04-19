@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {
   Terminal, BookOpen, Search, FileText, Bookmark, Upload, Users, Settings,
   ChevronLeft, ChevronRight, LogOut, Menu, X, Zap, Wrench, Server,
-  LayoutDashboard, PlusCircle, ChevronDown, GitBranch, Shield
+  LayoutDashboard, PlusCircle, ChevronDown, GitBranch, Shield, Play
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -42,6 +42,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     { href: '/dashboard/bladwijzers', label: 'Bladwijzers', icon: Bookmark },
     { href: '/dashboard/commando-referentie', label: 'Commando Referentie', icon: Terminal },
     { href: '/dashboard/repos', label: 'Repo Bibliotheek', icon: GitBranch },
+    { href: '/dashboard/videos', label: "Video's", icon: Play },
     { href: '/dashboard/security', label: 'Security', icon: Shield },
   ];
 
