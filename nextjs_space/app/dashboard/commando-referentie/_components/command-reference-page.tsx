@@ -88,9 +88,9 @@ export default function CommandReferencePage() {
             <Card className="hover:bg-accent/20 transition-colors" style={{ boxShadow: 'var(--shadow-sm)' }}>
               <CardContent className="p-3 flex items-center gap-3">
                 <Terminal className="w-4 h-4 text-primary flex-shrink-0" />
-                <code className="font-mono text-sm font-medium text-amber-400 min-w-[180px]">{cmd?.cmd ?? ''}</code>
-                <span className="text-sm text-foreground/80 flex-1">{cmd?.desc ?? ''}</span>
-                <Badge variant="secondary" className="text-[10px] flex-shrink-0 text-foreground">{cmd?.cat ?? ''}</Badge>
+                <code className="font-mono text-sm font-medium text-amber-300 min-w-[180px]">{cmd?.cmd ?? ''}</code>
+                <span className="text-sm text-zinc-200 flex-1">{cmd?.desc ?? ''}</span>
+                <Badge variant="outline" className="text-[10px] flex-shrink-0 text-zinc-300 border-zinc-600">{cmd?.cat ?? ''}</Badge>
                 <Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0" onClick={() => copyCmd(cmd?.cmd ?? '')}>
                   {copiedCmd === cmd?.cmd ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
                 </Button>

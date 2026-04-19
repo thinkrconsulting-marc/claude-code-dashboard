@@ -29,6 +29,21 @@ enum UploadStatus {
   REJECTED
 }
 
+enum RepoCategory {
+  SKILL
+  MCP
+  TOOL
+  PLUGIN
+  OTHER
+}
+
+enum SecurityStatus {
+  PENDING
+  SAFE
+  WARNING
+  DANGEROUS
+}
+
 model User {
   id            String     @id @default(cuid())
   name          String?
@@ -39,6 +54,7 @@ model User {
   updatedAt     DateTime   @updatedAt
   bookmarks     Bookmark[]
   uploads       Upload[]
+  repos         GitHubRepo[]
 }
 
 model Guide {
@@ -135,4 +151,29 @@ model Upload {
 
   @@index([userId])
   @@index([status])
+}
+
+model GitHubRepo {
+  id              String         @id @default(cuid())
+  name            String
+  url             String         @unique
+  description     String?        @db.Text
+  contextNote     String?        @db.Text
+  category        RepoCategory   @default(OTHER)
+  installCommand  String?
+  stars           Int?
+  license         String?
+  language        String?
+  readmeContent   String?        @db.Text
+  securityStatus  SecurityStatus @default(PENDING)
+  securityReport  String?        @db.Text
+  sourceUploadId  String?
+  addedById       String
+  addedBy         User           @relation(fields: [addedById], references: [id], onDelete: Cascade)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([category])
+  @@index([securityStatus])
+  @@index([addedById])
 }

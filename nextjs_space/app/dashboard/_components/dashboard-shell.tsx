@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {
   Terminal, BookOpen, Search, FileText, Bookmark, Upload, Users, Settings,
   ChevronLeft, ChevronRight, LogOut, Menu, X, Zap, Wrench, Server,
-  LayoutDashboard, PlusCircle, ChevronDown
+  LayoutDashboard, PlusCircle, ChevronDown, GitBranch, Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -41,12 +41,16 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     { href: '/dashboard/templates', label: 'CLAUDE.md Templates', icon: FileText },
     { href: '/dashboard/bladwijzers', label: 'Bladwijzers', icon: Bookmark },
     { href: '/dashboard/commando-referentie', label: 'Commando Referentie', icon: Terminal },
+    { href: '/dashboard/repos', label: 'Repo Bibliotheek', icon: GitBranch },
+    { href: '/dashboard/security', label: 'Security', icon: Shield },
   ];
 
   const adminItems = [
     { href: '/dashboard/admin/upload', label: 'Bestanden Uploaden', icon: Upload },
     { href: '/dashboard/admin/gidsen', label: 'Gidsen Beheren', icon: PlusCircle },
     { href: '/dashboard/admin/gebruikers', label: 'Gebruikers', icon: Users },
+    { href: '/dashboard/admin/tekst-invoer', label: 'Tekst Invoer', icon: FileText },
+    { href: '/dashboard/admin/repos', label: 'Repos Beheren', icon: GitBranch },
   ];
 
   const SidebarContent = () => (
