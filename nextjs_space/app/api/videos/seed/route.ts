@@ -16,6 +16,8 @@ const MONITORED_CHANNELS = [
   '@SaminYasar_', '@BartBoonstra_slimwerken', '@AIProductivityCoach',
   '@BrockMesarich', '@velvetshark-com', '@CodeUCraftAI', '@DaviddTech',
   '@parkerprompts', '@RoboNuggets', '@Profit-Studio-official', '@zinhoautomates',
+  '@nicksaraev', '@Dubibubii', '@Itssssss_Jack', '@claude',
+  '@AIPathwaysChannel', '@aiadvantage',
 ];
 
 async function batchCategorize(videos: { title: string; description: string; videoId: string }[], chapters: { id: string; title: string; number: number }[]): Promise<Map<string, any>> {
