@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,10 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+
+  useEffect(() => { setMounted(true); }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e?.preventDefault?.();
@@ -36,6 +39,27 @@ export default function LoginForm() {
       setLoading(false);
     }
   };
+
+  if (!mounted) {
+    return (
+      <Card className="w-full max-w-md" style={{ boxShadow: 'var(--shadow-lg)' }}>
+        <CardHeader className="text-center space-y-2">
+          <div className="mx-auto w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+            <Terminal className="w-6 h-6 text-primary" />
+          </div>
+          <CardTitle className="font-display text-2xl tracking-tight">Claude Code Kennisbank</CardTitle>
+          <CardDescription>Log in om toegang te krijgen tot de gids</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="h-10 bg-muted/30 rounded-md animate-pulse" />
+            <div className="h-10 bg-muted/30 rounded-md animate-pulse" />
+            <div className="h-10 bg-primary/20 rounded-md animate-pulse" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-md" style={{ boxShadow: 'var(--shadow-lg)' }}>

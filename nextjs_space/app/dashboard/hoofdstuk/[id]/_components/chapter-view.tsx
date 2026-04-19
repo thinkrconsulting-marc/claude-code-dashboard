@@ -47,10 +47,10 @@ function CodeBlock({ content, language }: { content: string; language: string | 
         </Button>
       </div>
       {language && (
-        <span className="absolute left-3 top-2 text-[10px] font-mono text-muted-foreground uppercase">{language}</span>
+        <span className="absolute left-3 top-2 text-[10px] font-mono text-muted-foreground/70 uppercase">{language}</span>
       )}
-      <pre className={cn('bg-muted/70 rounded-lg p-4 overflow-x-auto text-sm font-mono', language && 'pt-7')}>
-        <code>{content ?? ''}</code>
+      <pre className={cn('bg-muted/70 rounded-lg p-4 overflow-x-auto text-sm font-mono text-foreground', language && 'pt-7')}>
+        <code className="text-foreground">{content ?? ''}</code>
       </pre>
     </div>
   );
@@ -74,7 +74,7 @@ function TableBlock({ content }: { content: string }) {
         <thead>
           <tr className="bg-muted/50">
             {headers?.map?.((h: string, i: number) => (
-              <th key={i} className="px-4 py-2.5 text-left font-semibold text-xs uppercase tracking-wider">{h ?? ''}</th>
+              <th key={i} className="px-4 py-2.5 text-left font-semibold text-xs uppercase tracking-wider text-foreground">{h ?? ''}</th>
             )) ?? []}
           </tr>
         </thead>
@@ -82,7 +82,7 @@ function TableBlock({ content }: { content: string }) {
           {rows?.map?.((row: string[], i: number) => (
             <tr key={i} className="border-t border-border hover:bg-muted/30 transition-colors">
               {row?.map?.((cell: string, j: number) => (
-                <td key={j} className="px-4 py-2 text-sm">{cell ?? ''}</td>
+                <td key={j} className="px-4 py-2 text-sm text-foreground">{cell ?? ''}</td>
               )) ?? []}
             </tr>
           )) ?? []}
