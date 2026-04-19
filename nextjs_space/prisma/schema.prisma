@@ -55,6 +55,7 @@ model User {
   bookmarks     Bookmark[]
   uploads       Upload[]
   repos         GitHubRepo[]
+  processingLogs ProcessingLog[]
 }
 
 model Guide {
@@ -93,6 +94,7 @@ model Section {
   updatedAt   DateTime       @updatedAt
   blocks      ContentBlock[]
   bookmarks   Bookmark[]
+  versions    SectionVersion[]
 
   @@index([chapterId])
 }
@@ -151,6 +153,47 @@ model Upload {
 
   @@index([userId])
   @@index([status])
+}
+
+enum ProcessAction {
+  NEW_SECTION
+  UPDATE_SECTION
+  NEW_CHAPTER
+  DUPLICATE_SKIP
+  OUTDATED_REPLACE
+}
+
+model SectionVersion {
+  id            String   @id @default(cuid())
+  sectionId     String
+  section       Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  versionNumber Int
+  title         String
+  contentSnapshot String  @db.Text
+  action        ProcessAction
+  changeNote    String?
+  createdById   String?
+  createdAt     DateTime @default(now())
+
+  @@index([sectionId])
+}
+
+model ProcessingLog {
+  id            String        @id @default(cuid())
+  uploadId      String?
+  inputTitle    String?
+  inputLength   Int
+  actionsJson   String        @db.Text
+  sectionsCreated Int         @default(0)
+  sectionsUpdated Int         @default(0)
+  chaptersCreated Int         @default(0)
+  duplicatesSkipped Int       @default(0)
+  reposExtracted Int          @default(0)
+  processedById String
+  processedBy   User          @relation(fields: [processedById], references: [id])
+  createdAt     DateTime      @default(now())
+
+  @@index([processedById])
 }
 
 model GitHubRepo {

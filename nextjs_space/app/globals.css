@@ -154,28 +154,29 @@
 [data-hydration-error] { display: none !important; }
 
 /* Force text visibility in dark mode for chapter content and cards */
-.dark .chapter-content p,
-.dark .chapter-content span,
-.dark .chapter-content div,
-.dark .chapter-content td,
-.dark .chapter-content th,
-.dark .chapter-content li,
-.dark .chapter-content strong,
-.dark .chapter-content em,
-.dark .chapter-content b {
-  color: hsl(0 0% 90%) !important;
+.dark .chapter-content,
+.dark .chapter-content *:not(code):not(button):not(button *):not(svg):not(path) {
+  --tw-text-opacity: 1 !important;
+  color: #e0e0e0 !important;
 }
 .dark .chapter-content code {
-  color: hsl(35 95% 75%) !important;
+  color: #e5a855 !important;
 }
 .dark .chapter-content h1,
 .dark .chapter-content h2,
 .dark .chapter-content h3,
 .dark .chapter-content h4 {
-  color: hsl(0 0% 98%) !important;
+  color: #fafafa !important;
+}
+.dark .chapter-content .text-primary,
+.dark .chapter-content .text-primary * {
+  color: hsl(24 95% 53%) !important;
+}
+.dark .chapter-content .text-muted-foreground {
+  color: #a1a1aa !important;
 }
 .dark .chapter-content pre {
-  color: hsl(0 0% 85%) !important;
+  color: #d4d4d8 !important;
 }
 
 /* ========== Dark Mode Global Text Contrast Fix ========== */

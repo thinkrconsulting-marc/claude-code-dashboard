@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
-import { Bookmark, BookmarkCheck, Copy, Check, ChevronRight, BookOpen, Code, Table2, Hash } from 'lucide-react';
+import { Bookmark, BookmarkCheck, Copy, Check, ChevronRight, BookOpen, Code, Table2, Hash, History, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -92,12 +92,37 @@ function TableBlock({ content }: { content: string }) {
   );
 }
 
+interface SectionVersionData {
+  id: string;
+  versionNumber: number;
+  title: string;
+  contentSnapshot: string;
+  action: string;
+  changeNote: string | null;
+  createdAt: string;
+}
+
 export default function ChapterView({ chapterId }: { chapterId: string }) {
   const { data: session } = useSession() || {};
+  const isAdmin = (session?.user as any)?.role === 'ADMIN';
   const [chapter, setChapter] = useState<ChapterData | null>(null);
   const [loading, setLoading] = useState(true);
   const [bookmarkedSections, setBookmarkedSections] = useState<Set<string>>(new Set());
   const [activeSection, setActiveSection] = useState<string>('');
+  const [versionPanel, setVersionPanel] = useState<string | null>(null);
+  const [versions, setVersions] = useState<SectionVersionData[]>([]);
+  const [loadingVersions, setLoadingVersions] = useState(false);
+
+  const showVersions = async (sectionId: string) => {
+    if (versionPanel === sectionId) { setVersionPanel(null); return; }
+    setVersionPanel(sectionId);
+    setLoadingVersions(true);
+    try {
+      const res = await fetch(`/api/sections/${sectionId}/versions`);
+      const data = await res.json();
+      setVersions(data?.versions ?? []);
+    } catch { setVersions([]); } finally { setLoadingVersions(false); }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -208,18 +233,20 @@ export default function ChapterView({ chapterId }: { chapterId: string }) {
                       <Hash className="w-4 h-4 text-primary" />
                       <h2 className="font-display text-lg font-semibold text-foreground">{section?.title ?? ''}</h2>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => toggleBookmark(section?.id ?? '')}
-                      className="flex-shrink-0"
-                    >
-                      {bookmarkedSections?.has?.(section?.id ?? '') ? (
-                        <BookmarkCheck className="w-4 h-4 text-primary" />
-                      ) : (
-                        <Bookmark className="w-4 h-4 text-muted-foreground" />
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      {isAdmin && (
+                        <Button variant="ghost" size="icon" onClick={() => showVersions(section?.id ?? '')} title="Versiegeschiedenis">
+                          <History className={cn('w-4 h-4', versionPanel === section?.id ? 'text-primary' : 'text-muted-foreground')} />
+                        </Button>
                       )}
-                    </Button>
+                      <Button variant="ghost" size="icon" onClick={() => toggleBookmark(section?.id ?? '')} className="flex-shrink-0">
+                        {bookmarkedSections?.has?.(section?.id ?? '') ? (
+                          <BookmarkCheck className="w-4 h-4 text-primary" />
+                        ) : (
+                          <Bookmark className="w-4 h-4 text-muted-foreground" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
                   {(section?.tags?.length ?? 0) > 0 && (
                     <div className="flex flex-wrap gap-1 mb-3">
@@ -239,6 +266,40 @@ export default function ChapterView({ chapterId }: { chapterId: string }) {
                       );
                     }) ?? []}
                   </div>
+                  {/* Version History Panel */}
+                  {versionPanel === section?.id && (
+                    <div className="mt-4 p-4 rounded-lg border border-primary/20 bg-primary/5">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-sm font-semibold flex items-center gap-2 text-foreground">
+                          <History className="w-3.5 h-3.5" /> Versiegeschiedenis
+                        </h4>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setVersionPanel(null)}>
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      {loadingVersions ? (
+                        <p className="text-xs text-muted-foreground">Laden...</p>
+                      ) : versions.length === 0 ? (
+                        <p className="text-xs text-muted-foreground">Geen versiegeschiedenis beschikbaar voor deze sectie.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {versions.map((v) => (
+                            <div key={v.id} className="p-2 rounded bg-muted/30 text-xs">
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium text-foreground">v{v.versionNumber} — {v.action.replace(/_/g, ' ')}</span>
+                                <span className="text-muted-foreground">{new Date(v.createdAt).toLocaleString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                              </div>
+                              {v.changeNote && <p className="text-muted-foreground mt-0.5">{v.changeNote}</p>}
+                              <details className="mt-1">
+                                <summary className="cursor-pointer text-primary hover:underline">Bekijk content</summary>
+                                <pre className="mt-1 p-2 bg-muted/50 rounded text-[11px] whitespace-pre-wrap max-h-40 overflow-y-auto text-foreground">{v.contentSnapshot?.substring(0, 2000)}</pre>
+                              </details>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>

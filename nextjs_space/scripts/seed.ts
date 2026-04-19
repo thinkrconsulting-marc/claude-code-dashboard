@@ -146,7 +146,7 @@ async function main() {
   console.log('Admin user created/updated');
 
   // 2. Parse main guide
-  const guidePath = path.join(__dirname, '..', 'data', 'Claude_Code_Gids_NL.md');
+  const guidePath = path.join(__dirname, '..', '..', 'data_seed', 'Claude_Code_Gids_NL.md');
   let guideContent = '';
   try {
     guideContent = fs.readFileSync(guidePath, 'utf-8');
@@ -228,7 +228,7 @@ async function main() {
   ];
 
   for (const tmpl of templateFiles) {
-    const tmplPath = path.join(__dirname, '..', 'data', tmpl.file);
+    const tmplPath = path.join(__dirname, '..', '..', 'data_seed', tmpl.file);
     let tmplContent = '';
     try { tmplContent = fs.readFileSync(tmplPath, 'utf-8'); } catch { continue; }
     await prisma.template.upsert({
@@ -246,7 +246,7 @@ async function main() {
   }
 
   // 6. Seed Skills Installation Guide as a separate guide
-  const skillsPath = path.join(__dirname, '..', 'data', 'Skills_Installation_Guide.md');
+  const skillsPath = path.join(__dirname, '..', '..', 'data_seed', 'Skills_Installation_Guide.md');
   let skillsContent = '';
   try { skillsContent = fs.readFileSync(skillsPath, 'utf-8'); } catch {}
   if (skillsContent) {
