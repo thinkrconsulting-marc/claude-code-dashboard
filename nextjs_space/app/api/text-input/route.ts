@@ -38,11 +38,11 @@ export async function POST(request: Request) {
     const chaptersContext = chapters?.map?.((c: any) => `${c?.number}. ${c?.title} (id: ${c?.id})`)?.join?.('\n') ?? '';
 
     // AI analysis with dual task: categorize content + extract GitHub links
-    const analysisResponse = await fetch('https://apps.abacus.ai/v1/chat/completions', {
+    const analysisResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.ABACUSAI_API_KEY}`,
+        'Authorization': `Bearer ${process.env.GEMINI_API_KEY}`,
       },
       body: JSON.stringify({
         model: 'gemini-2.5-flash',

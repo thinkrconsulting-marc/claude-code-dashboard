@@ -4,11 +4,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/db';
 
-const LLM_URL = process.env.GEMINI_API_KEY
-  ? 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'
-  : 'https://apps.abacus.ai/v1/chat/completions';
-const LLM_KEY = process.env.GEMINI_API_KEY || process.env.ABACUSAI_API_KEY || '';
-const LLM_MODEL = process.env.GEMINI_API_KEY ? 'gemini-2.5-flash' : 'gemini-2.5-flash';
+const LLM_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
+const LLM_KEY = process.env.GEMINI_API_KEY || '';
+const LLM_MODEL = 'gemini-2.5-flash';
 
 async function callLLM(messages: any[], maxTokens = 4000) {
   const res = await fetch(LLM_URL, {

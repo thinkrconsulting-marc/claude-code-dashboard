@@ -39,18 +39,18 @@ export async function POST(request: Request) {
       // Use LLM API for PDF
       const base64Buffer = await file.arrayBuffer();
       const base64String = Buffer.from(base64Buffer).toString('base64');
-      const pdfResponse = await fetch('https://apps.abacus.ai/v1/chat/completions', {
+      const pdfResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.ABACUSAI_API_KEY}`,
+          'Authorization': `Bearer ${process.env.GEMINI_API_KEY}`,
         },
         body: JSON.stringify({
           model: 'gemini-2.5-flash',
           messages: [{
             role: 'user',
             content: [
-              { type: 'file', file: { filename: fileName, file_data: `data:application/pdf;base64,${base64String}` } },
+              { type: 'image_url', image_url: { url: `data:application/pdf;base64,${base64String}` } },
               { type: 'text', text: 'Extract all the text content from this PDF document. Return only the raw text, no formatting instructions.' },
             ],
           }],
@@ -81,11 +81,11 @@ export async function POST(request: Request) {
     const chaptersContext = chapters?.map?.((c: any) => `${c?.number}. ${c?.title} (id: ${c?.id})`)?.join?.('\n') ?? '';
 
     // Now stream AI analysis
-    const analysisResponse = await fetch('https://apps.abacus.ai/v1/chat/completions', {
+    const analysisResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.ABACUSAI_API_KEY}`,
+        'Authorization': `Bearer ${process.env.GEMINI_API_KEY}`,
       },
       body: JSON.stringify({
         model: 'gemini-2.5-flash',
