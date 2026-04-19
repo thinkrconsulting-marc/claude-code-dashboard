@@ -22,8 +22,8 @@ async function callLLM(messages: any[], maxTokens = 4000) {
   try { return JSON.parse(text); } catch { return {}; }
 }
 
-function parseMarkdownToBlocks(text: string): { type: string; content: string; language?: string }[] {
-  const blocks: { type: string; content: string; language?: string }[] = [];
+function parseMarkdownToBlocks(text: string): { type: string; content: string; language?: string; imageUrl?: string }[] {
+  const blocks: { type: string; content: string; language?: string; imageUrl?: string }[] = [];
   const lines = text.split('\n');
   let current = '';
   let inCode = false;
@@ -52,6 +52,14 @@ function parseMarkdownToBlocks(text: string): { type: string; content: string; l
       continue;
     }
     if (inCode) { current += line + '\n'; continue; }
+
+    // Image detection: ![alt](url)
+    const imgMatch = line.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (imgMatch) {
+      flushText();
+      blocks.push({ type: 'IMAGE', content: imgMatch[1] || 'Afbeelding', imageUrl: imgMatch[2] });
+      continue;
+    }
 
     // Table detection
     if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
@@ -212,6 +220,7 @@ Respond with raw JSON only.`
                 type: blocks[i].type as any,
                 content: blocks[i].content,
                 language: blocks[i].language || null,
+                imageUrl: blocks[i].imageUrl || null,
                 orderIndex: i,
                 sectionId: section.id,
               },
@@ -256,6 +265,7 @@ Respond with raw JSON only.`
                 type: blocks[i].type as any,
                 content: blocks[i].content,
                 language: blocks[i].language || null,
+                imageUrl: blocks[i].imageUrl || null,
                 orderIndex: i,
                 sectionId: section.id,
               },
@@ -313,6 +323,7 @@ Respond with raw JSON only.`
                 type: blocks[i].type as any,
                 content: blocks[i].content,
                 language: blocks[i].language || null,
+                imageUrl: blocks[i].imageUrl || null,
                 orderIndex: i,
                 sectionId: existingSection.id,
               },

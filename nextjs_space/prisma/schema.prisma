@@ -19,6 +19,7 @@ enum ContentBlockType {
   CODE
   TABLE
   HEADING
+  IMAGE
 }
 
 enum UploadStatus {
@@ -104,6 +105,7 @@ model ContentBlock {
   type        ContentBlockType
   content     String
   language    String?          
+  imageUrl    String?
   orderIndex  Int              @default(0)
   sectionId   String
   section     Section          @relation(fields: [sectionId], references: [id], onDelete: Cascade)

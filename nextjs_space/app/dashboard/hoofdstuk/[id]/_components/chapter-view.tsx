@@ -14,6 +14,7 @@ interface ContentBlock {
   type: string;
   content: string;
   language: string | null;
+  imageUrl: string | null;
   orderIndex: number;
 }
 
@@ -259,6 +260,16 @@ export default function ChapterView({ chapterId }: { chapterId: string }) {
                     {section?.blocks?.map?.((block: ContentBlock) => {
                       if (block?.type === 'CODE') return <CodeBlock key={block?.id} content={block?.content ?? ''} language={block?.language ?? null} />;
                       if (block?.type === 'TABLE') return <TableBlock key={block?.id} content={block?.content ?? ''} />;
+                      if (block?.type === 'IMAGE' && block?.imageUrl) return (
+                        <div key={block?.id} className="my-3">
+                          <div className="rounded-lg overflow-hidden border border-border bg-muted/20 max-w-2xl">
+                            <img src={block.imageUrl} alt={block?.content || 'Afbeelding'} className="w-full h-auto max-h-[500px] object-contain" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                            {block?.content && block.content !== 'Afbeelding' && (
+                              <p className="text-xs text-zinc-400 px-3 py-1.5 border-t border-border">{block.content}</p>
+                            )}
+                          </div>
+                        </div>
+                      );
                       return (
                         <div key={block?.id} className="text-sm leading-relaxed whitespace-pre-wrap text-foreground">
                           {block?.content ?? ''}
