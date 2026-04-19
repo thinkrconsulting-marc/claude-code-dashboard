@@ -183,9 +183,11 @@
 /* Ensure ALL text is readable against dark backgrounds.
    Dark card bg ~#09090b needs light text ~#fafafa. */
 
-/* Global: set default text color to white for all dark surfaces */
+/* Global: override foreground/muted colors for dark mode */
 .dark {
   --tw-text-opacity: 1;
+  --foreground: 0 0% 95%;
+  --muted-foreground: 240 5% 64.9%;
 }
 
 .dark span,

@@ -26,12 +26,12 @@ interface Repo {
   createdAt: string;
 }
 
-const categories = ['ALL', 'SKILL', 'MCP_SERVER', 'TOOL', 'PLUGIN', 'OTHER'];
-const catLabels: Record<string, string> = { ALL: 'Alles', SKILL: 'Skill', MCP_SERVER: 'MCP Server', TOOL: 'Tool', PLUGIN: 'Plugin', OTHER: 'Overig' };
+const categories = ['ALL', 'SKILL', 'MCP', 'TOOL', 'PLUGIN', 'OTHER'];
+const catLabels: Record<string, string> = { ALL: 'Alles', SKILL: 'Skill', MCP: 'MCP Server', TOOL: 'Tool', PLUGIN: 'Plugin', OTHER: 'Overig' };
 
 const catColor: Record<string, string> = {
   SKILL: 'bg-blue-500/20 text-blue-400',
-  MCP_SERVER: 'bg-purple-500/20 text-purple-400',
+  MCP: 'bg-purple-500/20 text-purple-400',
   TOOL: 'bg-green-500/20 text-green-400',
   PLUGIN: 'bg-amber-500/20 text-amber-400',
   OTHER: 'bg-zinc-500/20 text-zinc-400',
@@ -118,18 +118,18 @@ export default function ReposPage() {
                     <div className="flex items-start gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className="font-semibold text-foreground">{repo.name}</span>
-                          <Badge className={catColor[repo.category] ?? catColor.OTHER}>{repo.category}</Badge>
+                          <span className="font-semibold text-zinc-100">{repo.name}</span>
+                          <Badge className={catColor[repo.category] ?? catColor.OTHER}>{catLabels[repo.category] ?? repo.category}</Badge>
                           <span className={`text-xs ${secColor[repo.securityStatus] ?? secColor.PENDING}`}>
                             {secLabel[repo.securityStatus] ?? secLabel.PENDING}
                           </span>
                         </div>
-                        <p className="text-xs text-primary break-all mb-1">{repo.url}</p>
-                        {repo.description && <p className="text-sm text-foreground/80 line-clamp-2">{repo.description}</p>}
-                        {repo.contextNote && <p className="text-xs text-muted-foreground italic mt-1 line-clamp-1">💬 {repo.contextNote}</p>}
+                        <p className="text-xs text-orange-400 break-all mb-1">{repo.url}</p>
+                        {repo.description && <p className="text-sm text-zinc-300 line-clamp-2">{repo.description}</p>}
+                        {repo.contextNote && <p className="text-xs text-zinc-400 italic mt-1 line-clamp-1">💬 {repo.contextNote}</p>}
                         {repo.installCommand && (
                           <div className="mt-2 flex items-center gap-2" onClick={(e) => e.preventDefault()}>
-                            <code className="text-xs bg-muted/50 px-2 py-1 rounded font-mono text-amber-400 truncate max-w-md">{repo.installCommand}</code>
+                            <code className="text-xs bg-zinc-800/70 px-2 py-1 rounded font-mono text-amber-400 truncate max-w-md">{repo.installCommand}</code>
                             <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={(e) => {
                               e.preventDefault();
                               navigator?.clipboard?.writeText?.(repo.installCommand ?? '');
@@ -142,11 +142,11 @@ export default function ReposPage() {
                       </div>
                       <div className="flex flex-col items-end gap-1 shrink-0">
                         {repo.stars != null && (
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                          <span className="text-xs text-zinc-400 flex items-center gap-1">
                             <Star className="w-3 h-3 text-amber-400" />{repo.stars.toLocaleString()}
                           </span>
                         )}
-                        {repo.language && <span className="text-[10px] text-muted-foreground">{repo.language}</span>}
+                        {repo.language && <span className="text-[10px] text-zinc-400">{repo.language}</span>}
                       </div>
                     </div>
                   </CardContent>

@@ -28,7 +28,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
 
 const categoryLabels: Record<string, string> = {
   SKILL: 'Skill',
-  MCP_SERVER: 'MCP Server',
+  MCP: 'MCP Server',
   TOOL: 'Tool',
   PLUGIN: 'Plugin',
   OTHER: 'Overig',
