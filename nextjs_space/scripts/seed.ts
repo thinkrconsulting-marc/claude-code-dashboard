@@ -225,6 +225,7 @@ async function main() {
     { name: 'General CLAUDE.md', file: 'general_CLAUDE.md', category: 'General', desc: 'Algemene software development CLAUDE.md template' },
     { name: 'Tech CLAUDE.md', file: 'tech_CLAUDE.md', category: 'Tech', desc: 'Full-stack web development CLAUDE.md template' },
     { name: 'Finance CLAUDE.md', file: 'finance_CLAUDE.md', category: 'Finance', desc: 'Finance & stock trading CLAUDE.md template' },
+    { name: 'Karpathy Skills CLAUDE.md', file: 'karpathy_skills_CLAUDE.md', category: 'Skills', desc: 'Gedragsrichtlijnen om veelvoorkomende LLM-codefouten te verminderen — gebaseerd op Andrej Karpathy\'s observaties' },
   ];
 
   for (const tmpl of templateFiles) {
