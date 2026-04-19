@@ -202,11 +202,11 @@ export default function ChapterView({ chapterId }: { chapterId: string }) {
               transition={{ delay: si * 0.05 }}
             >
               <Card style={{ boxShadow: 'var(--shadow-sm)' }}>
-                <CardContent className="p-6">
+                <CardContent className="p-6 chapter-content">
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div className="flex items-center gap-2">
                       <Hash className="w-4 h-4 text-primary" />
-                      <h2 className="font-display text-lg font-semibold">{section?.title ?? ''}</h2>
+                      <h2 className="font-display text-lg font-semibold text-foreground">{section?.title ?? ''}</h2>
                     </div>
                     <Button
                       variant="ghost"

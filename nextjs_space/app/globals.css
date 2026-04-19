@@ -152,3 +152,42 @@
 }
 
 [data-hydration-error] { display: none !important; }
+
+/* ========== Dark Mode Global Text Contrast Fix ========== */
+/* Ensure ALL text is readable against dark backgrounds.
+   Dark card bg ~#09090b needs light text ~#fafafa. */
+
+/* Global: set default text color to white for all dark surfaces */
+.dark {
+  --tw-text-opacity: 1;
+}
+
+.dark span,
+.dark p,
+.dark div,
+.dark td,
+.dark th,
+.dark li,
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6,
+.dark pre,
+.dark code,
+.dark label,
+.dark .whitespace-pre-wrap {
+  color: inherit;
+}
+
+/* Ensure all content inside rounded-lg bordered cards is readable */
+.dark .rounded-lg {
+  color: hsl(0 0% 98%);
+}
+
+/* Preserve intentional color utilities */
+.dark .text-muted-foreground { color: hsl(var(--muted-foreground)) !important; }
+.dark .text-primary { color: hsl(var(--primary)) !important; }
+.dark .text-amber-400 { color: rgb(251 191 36) !important; }
+.dark .text-green-500 { color: rgb(34 197 94) !important; }
+.dark .text-destructive { color: hsl(var(--destructive)) !important; }
+.dark .text-foreground\/80 { color: hsl(0 0% 98% / 0.8) !important; }
+.dark .text-foreground { color: hsl(0 0% 98%) !important; }
+.dark .text-card-foreground { color: hsl(0 0% 98%) !important; }
+.dark code { color: hsl(24 95% 63%); }
