@@ -18,3 +18,8 @@ out
 .deploy
 .logs
 *.tsbuildinfo
+.env
+.env.local
+.env.production
+.abacus.donotdelete
+.project_instructions.md
