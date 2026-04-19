@@ -58,6 +58,36 @@ model User {
   repos         GitHubRepo[]
   processingLogs ProcessingLog[]
   videos        YouTubeVideo[]
+  activities    ActivityLog[]
+  sessions      UserSession[]
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String   // PAGE_VIEW, VIDEO_WATCH, VIDEO_RATE, BOOKMARK, SEARCH, LOGIN, LOGOUT
+  page      String?  // /dashboard/videos, /dashboard/hoofdstuk/ch-1, etc.
+  details   String?  // Extra info: search query, video title, etc.
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([action])
+}
+
+model UserSession {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startedAt   DateTime  @default(now())
+  lastSeenAt  DateTime  @default(now())
+  endedAt     DateTime?
+  userAgent   String?
+  pagesViewed Int       @default(0)
+
+  @@index([userId])
+  @@index([lastSeenAt])
 }
 
 model Guide {

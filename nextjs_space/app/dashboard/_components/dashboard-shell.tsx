@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {
   Terminal, BookOpen, Search, FileText, Bookmark, Upload, Users, Settings,
   ChevronLeft, ChevronRight, LogOut, Menu, X, Zap, Wrench, Server,
-  LayoutDashboard, PlusCircle, ChevronDown, GitBranch, Shield, Play
+  LayoutDashboard, PlusCircle, ChevronDown, GitBranch, Shield, Play, Activity
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -52,6 +52,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     { href: '/dashboard/admin/gebruikers', label: 'Gebruikers', icon: Users },
     { href: '/dashboard/admin/tekst-invoer', label: 'Tekst Invoer', icon: FileText },
     { href: '/dashboard/admin/repos', label: 'Repos Beheren', icon: GitBranch },
+    { href: '/dashboard/admin/activiteit', label: 'Activiteiten Log', icon: Activity },
   ];
 
   const SidebarContent = () => (
