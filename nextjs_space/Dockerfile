@@ -32,6 +32,10 @@ ENV NEXT_OUTPUT_MODE=standalone
 # Fix TypeScript strict mode for standalone build
 RUN sed -i 's/ignoreBuildErrors: false/ignoreBuildErrors: true/' next.config.js
 
+# Database URL needed at build time for Prisma
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+
 RUN npx prisma generate && npm run build
 
 # Production image
