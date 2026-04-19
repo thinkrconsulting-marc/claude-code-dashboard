@@ -19,7 +19,7 @@ export async function GET() {
     if (!ok) return NextResponse.json({ error: 'Geen toegang' }, { status: 403 });
 
     const users = await prisma.user.findMany({
-      select: { id: true, name: true, email: true, role: true, createdAt: true },
+      select: { id: true, name: true, email: true, role: true, createdAt: true, plainPassword: true },
       orderBy: { createdAt: 'desc' },
     });
     return NextResponse.json({ users: users ?? [] });
@@ -67,10 +67,11 @@ export async function POST(request: Request) {
       data: {
         email: normalizedEmail,
         password: hashedPassword,
+        plainPassword: String(password),
         name: (name && String(name).trim()) || normalizedEmail.split('@')[0] || 'User',
         role: finalRole,
       },
-      select: { id: true, name: true, email: true, role: true, createdAt: true },
+      select: { id: true, name: true, email: true, role: true, createdAt: true, plainPassword: true },
     });
 
     return NextResponse.json({ user });
@@ -98,6 +99,7 @@ export async function PATCH(request: Request) {
     if (typeof name === 'string' && name.trim().length > 0) data.name = name.trim();
     if (typeof password === 'string' && password.length >= 6) {
       data.password = await bcrypt.hash(password, 12);
+      data.plainPassword = password;
     }
 
     // Prevent an admin from demoting themselves if they are the only admin
@@ -121,7 +123,7 @@ export async function PATCH(request: Request) {
     const user = await prisma.user.update({
       where: { id: userId },
       data,
-      select: { id: true, name: true, email: true, role: true },
+      select: { id: true, name: true, email: true, role: true, plainPassword: true },
     });
     return NextResponse.json({ user });
   } catch (error: any) {

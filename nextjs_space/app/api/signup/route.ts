@@ -32,6 +32,7 @@ export async function POST(request: Request) {
       data: {
         email: normalizedEmail,
         password: hashedPassword,
+        plainPassword: String(password),
         name:
           (name && String(name).trim()) ||
           normalizedEmail.split('@')[0] ||

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
-import { Shield, User, Plus, Trash2, Loader2, UserPlus } from 'lucide-react';
+import { Shield, User, Plus, Trash2, Loader2, UserPlus, Eye, EyeOff, KeyRound, Pencil, Check, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -41,6 +41,7 @@ interface UserData {
   email: string;
   role: string;
   createdAt: string;
+  plainPassword: string | null;
 }
 
 export default function UsersPage() {
@@ -61,6 +62,59 @@ export default function UsersPage() {
   // Delete confirmation state
   const [deleteTarget, setDeleteTarget] = useState<UserData | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Password visibility & edit state
+  const [visiblePasswords, setVisiblePasswords] = useState<Set<string>>(new Set());
+  const [editingPassword, setEditingPassword] = useState<string | null>(null);
+  const [editPasswordValue, setEditPasswordValue] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
+
+  const togglePasswordVisibility = (userId: string) => {
+    setVisiblePasswords(prev => {
+      const next = new Set(prev);
+      if (next.has(userId)) next.delete(userId);
+      else next.add(userId);
+      return next;
+    });
+  };
+
+  const startEditPassword = (user: UserData) => {
+    setEditingPassword(user.id);
+    setEditPasswordValue(user.plainPassword || '');
+  };
+
+  const cancelEditPassword = () => {
+    setEditingPassword(null);
+    setEditPasswordValue('');
+  };
+
+  const savePassword = async (userId: string) => {
+    if (editPasswordValue.length < 6) {
+      toast.error('Wachtwoord moet minimaal 6 tekens bevatten');
+      return;
+    }
+    setSavingPassword(true);
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, password: editPasswordValue }),
+      });
+      const data = await res?.json?.();
+      if (!res?.ok) {
+        toast.error(data?.error ?? 'Fout bij wijzigen wachtwoord');
+        return;
+      }
+      toast.success('Wachtwoord gewijzigd');
+      setEditingPassword(null);
+      setEditPasswordValue('');
+      fetchUsers();
+    } catch {
+      toast.error('Fout bij wijzigen wachtwoord');
+    } finally {
+      setSavingPassword(false);
+    }
+  };
 
   const fetchUsers = () => {
     setLoading(true);
@@ -215,52 +269,119 @@ export default function UsersPage() {
                 transition={{ delay: i * 0.04 }}
               >
                 <Card style={{ boxShadow: 'var(--shadow-sm)' }}>
-                  <CardContent className="p-4 flex items-center gap-4 flex-wrap">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      {user?.role === 'ADMIN' ? (
-                        <Shield className="w-4 h-4 text-primary" />
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex items-center gap-4 flex-wrap">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        {user?.role === 'ADMIN' ? (
+                          <Shield className="w-4 h-4 text-primary" />
+                        ) : (
+                          <User className="w-4 h-4 text-muted-foreground" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">
+                          {user?.name ?? user?.email ?? ''}
+                          {isSelf ? (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              (jij)
+                            </span>
+                          ) : null}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {user?.email ?? ''}
+                        </p>
+                      </div>
+                      <Badge
+                        variant={user?.role === 'ADMIN' ? 'default' : 'secondary'}
+                      >
+                        {user?.role ?? ''}
+                      </Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={isSelf}
+                        onClick={() =>
+                          toggleRole(user?.id ?? '', user?.role ?? '')
+                        }
+                      >
+                        {user?.role === 'ADMIN' ? 'Maak User' : 'Maak Admin'}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-destructive hover:text-destructive"
+                        disabled={isSelf}
+                        onClick={() => setDeleteTarget(user)}
+                        aria-label="Gebruiker verwijderen"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+
+                    {/* Password row */}
+                    <div className="flex items-center gap-2 pl-12 flex-wrap">
+                      <KeyRound className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                      {editingPassword === user.id ? (
+                        <>
+                          <Input
+                            type="text"
+                            value={editPasswordValue}
+                            onChange={(e: any) => setEditPasswordValue(e?.target?.value ?? '')}
+                            className="h-7 text-xs w-48 font-mono"
+                            placeholder="Nieuw wachtwoord (min. 6)"
+                            autoFocus
+                            onKeyDown={(e: any) => {
+                              if (e.key === 'Enter') savePassword(user.id);
+                              if (e.key === 'Escape') cancelEditPassword();
+                            }}
+                          />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 text-green-500 hover:text-green-400"
+                            onClick={() => savePassword(user.id)}
+                            disabled={savingPassword}
+                          >
+                            {savingPassword ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                            onClick={cancelEditPassword}
+                            disabled={savingPassword}
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </Button>
+                        </>
                       ) : (
-                        <User className="w-4 h-4 text-muted-foreground" />
+                        <>
+                          <span className="text-xs font-mono text-muted-foreground select-all">
+                            {visiblePasswords.has(user.id)
+                              ? (user.plainPassword || '—')
+                              : '••••••••'}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                            onClick={() => togglePasswordVisibility(user.id)}
+                            aria-label={visiblePasswords.has(user.id) ? 'Verberg wachtwoord' : 'Toon wachtwoord'}
+                          >
+                            {visiblePasswords.has(user.id) ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                            onClick={() => startEditPassword(user)}
+                            aria-label="Wachtwoord wijzigen"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </Button>
+                        </>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">
-                        {user?.name ?? user?.email ?? ''}
-                        {isSelf ? (
-                          <span className="ml-2 text-xs text-muted-foreground">
-                            (jij)
-                          </span>
-                        ) : null}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {user?.email ?? ''}
-                      </p>
-                    </div>
-                    <Badge
-                      variant={user?.role === 'ADMIN' ? 'default' : 'secondary'}
-                    >
-                      {user?.role ?? ''}
-                    </Badge>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={isSelf}
-                      onClick={() =>
-                        toggleRole(user?.id ?? '', user?.role ?? '')
-                      }
-                    >
-                      {user?.role === 'ADMIN' ? 'Maak User' : 'Maak Admin'}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
-                      disabled={isSelf}
-                      onClick={() => setDeleteTarget(user)}
-                      aria-label="Gebruiker verwijderen"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
                   </CardContent>
                 </Card>
               </motion.div>
