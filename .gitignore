@@ -18,8 +18,12 @@ out
 .deploy
 .logs
 *.tsbuildinfo
+# Environment files - NEVER commit these (Google scans for leaked API keys)
 .env
-.env.local
-.env.production
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
 .abacus.donotdelete
 .project_instructions.md
